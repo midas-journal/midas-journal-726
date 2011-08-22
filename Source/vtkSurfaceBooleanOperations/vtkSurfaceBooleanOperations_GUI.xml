@@ -1,0 +1,5 @@
+<ParaViewFilters>
+ <Category name="My Filters">
+  <Filter name="SurfaceBooleanOperations"/>
+ </Category>
+</ParaViewFilters>

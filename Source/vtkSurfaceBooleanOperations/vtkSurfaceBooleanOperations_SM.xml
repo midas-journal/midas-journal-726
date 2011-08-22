@@ -1,0 +1,38 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="filters">
+   <SourceProxy name="SurfaceBooleanOperations" class="vtkSurfaceBooleanOperations">
+     <InputProperty
+        name="Input"
+        command="AddInputConnection"
+        clean_command="RemoveAllInputs"
+        multiple_input="1">
+          <ProxyGroupDomain name="groups">
+            <Group name="sources"/>
+            <Group name="filters"/>
+          </ProxyGroupDomain>
+          <DataTypeDomain name="input_type">
+            <DataType value="vtkPolyData"/>
+          </DataTypeDomain>
+     </InputProperty>
+
+      <IntVectorProperty
+                        name="Mode"
+                        command="SetMode"
+                        number_of_elements="1"
+                        default_values="0">
+        <EnumerationDomain name="enum">
+          <Entry value="0" text="Union"/>
+          <Entry value="1" text="Intersection"/>
+          <Entry value="2" text="Difference"/>
+        </EnumerationDomain>
+        <Documentation>
+          This property indicates which mode will be used.
+        </Documentation>
+         </IntVectorProperty>
+
+
+   <!-- End SurfaceBooleanOperations -->
+   </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
+
