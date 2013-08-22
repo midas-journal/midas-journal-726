@@ -4,13 +4,27 @@
 //
 //
 
+// Disable these warnings because the code below trigger them many times.
+#pragma GCC diagnostic ignored "-Wredundant-decls"
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#if defined(__clang__) && defined(__has_warning)
+	#if __has_warning("-Wdisabled-macro-expansion")
+		#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+	#endif
+	#if __has_warning("-Wdocumentation")
+		#pragma clang diagnostic ignored "-Wdocumentation"
+	#endif
+#endif
 
 #include "vtkSurfaceBooleanOperations.h"
 
+#include <assert.h>
 extern "C" {
 #include "glib.h"
 #include "gts.h"
 }
+#include <vtkVersion.h>
 #include <vtkPolyData.h>
 #include <vtkCellArray.h>
 #include <vtkTriangleFilter.h>
@@ -26,8 +40,6 @@ extern "C" {
 
 using namespace std;
 
-vtkCxxRevisionMacro(vtkSurfaceBooleanOperations, "$Revision: 0.0 $")
-;
 vtkStandardNewMacro(vtkSurfaceBooleanOperations)
 ;
 
@@ -72,20 +84,19 @@ void vtkSurfaceBooleanOperations::SetModeToDifference() {
   this->Modified();
 }
 
-void vtk2gts (vtkPolyData * input, GtsSurface * output)
+static void vtk2gts (vtkPolyData * input, GtsSurface * output)
 {
   GtsVertex ** vertices;
 
   g_return_if_fail(output != NULL);
   if (g_hash_table_size(output->faces) != 0)
     g_warning("overwriting surface");
-  input->Update();
   input->BuildLinks();
 
   vertices = (GtsVertex **)
     g_malloc(input->GetNumberOfPoints() * sizeof(GtsVertex *));
   for (vtkIdType i = 0; i < input->GetNumberOfPoints(); ++i) {
-    vtkFloatingPointType x[3];
+    double x[3];
     input->GetPoint(i, x);
     vertices[i] = gts_vertex_new(output->vertex_class, x[0], x[1], x[2]);
   }
@@ -130,8 +141,9 @@ static void gts2vtk_insert_triangle (GtsTriangle * t, vtkCellArray * polys)
   polys->InsertCellPoint(GPOINTER_TO_UINT(GTS_OBJECT(v2)->reserved));
   polys->InsertCellPoint(GPOINTER_TO_UINT(GTS_OBJECT(v3)->reserved));
 }
-void gts2vtk (GtsSurface * input, vtkPolyData * output)
+static void gts2vtk (GtsSurface * input, vtkPolyData * output)
 {
+  assert(output);
   vtkNew(vtkPoints,points);
   vtkNew(vtkCellArray,polys);
   gts_surface_foreach_vertex(input, (GtsFunc) &gts2vtk_insert_point, points);
@@ -165,20 +177,28 @@ int vtkSurfaceBooleanOperations::RequestData(vtkInformation *vtkNotUsed(request)
       vtkDataObject::DATA_OBJECT()));
 
   vtkNew(vtkTriangleFilter, triangle1);
+#if VTK_MAJOR_VERSION <= 5
   triangle1->SetInput(input1);
+#else
+  triangle1->SetInputData(input1);
+#endif
   vtkNew(vtkCleanPolyData,clean1);
-  clean1->SetInput(triangle1->GetOutput());
+  clean1->SetInputConnection(triangle1->GetOutputPort());
   vtkNew(vtkDataSetSurfaceFilter,flip1);
-  flip1->SetInput(clean1->GetOutput());
+  flip1->SetInputConnection(clean1->GetOutputPort());
   flip1->SetPieceInvariant(1);
   flip1->Update();
 
   vtkNew(vtkTriangleFilter, triangle2);
+#if VTK_MAJOR_VERSION <= 5
   triangle2->SetInput(input2);
+#else
+  triangle2->SetInputData(input2);
+#endif
   vtkNew(vtkCleanPolyData,clean2);
-  clean2->SetInput(triangle2->GetOutput());
+  clean2->SetInputConnection(triangle2->GetOutputPort());
   vtkNew(vtkDataSetSurfaceFilter,flip2);
-  flip2->SetInput(clean2->GetOutput());
+  flip2->SetInputConnection(clean2->GetOutputPort());
   flip2->SetPieceInvariant(1);
   flip2->Update();
 

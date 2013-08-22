@@ -27,7 +27,6 @@
 class vtkSurfaceBooleanOperations : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeRevisionMacro(vtkSurfaceBooleanOperations,vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
   static vtkSurfaceBooleanOperations *New();
 
