@@ -15,6 +15,9 @@
 	#if __has_warning("-Wdocumentation")
 		#pragma clang diagnostic ignored "-Wdocumentation"
 	#endif
+	#if __has_warning("-Wexit-time-destructors")
+		#pragma clang diagnostic ignored "-Wexit-time-destructors"
+	#endif
 #endif
 
 #include "vtkSurfaceBooleanOperations.h"
