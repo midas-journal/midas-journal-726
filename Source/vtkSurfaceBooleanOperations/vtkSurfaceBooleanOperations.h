@@ -7,6 +7,14 @@
 #ifndef vtkSurfaceBooleanOperations_h
 #define vtkSurfaceBooleanOperations_h
 
+// Disable these warnings because the code below trigger them many times.
+#if defined(__clang__) && defined(__has_warning)
+	#pragma clang diagnostic push
+	#if __has_warning("-Wextra-semi")
+		#pragma clang diagnostic ignored "-Wextra-semi"
+	#endif
+#endif
+
 #include "vtkPolyDataAlgorithm.h"
 
 
@@ -62,5 +70,10 @@ private:
   void operator=(const vtkSurfaceBooleanOperations&);  // Not implemented.
 
 };
+
+// Restore warning state.
+#if defined(__clang__) && defined(__has_warning)
+	#pragma clang diagnostic pop
+#endif
 
 #endif

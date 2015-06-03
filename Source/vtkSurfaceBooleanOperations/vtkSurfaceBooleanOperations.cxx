@@ -18,6 +18,9 @@
 	#if __has_warning("-Wexit-time-destructors")
 		#pragma clang diagnostic ignored "-Wexit-time-destructors"
 	#endif
+	#if __has_warning("-Wextra-semi")
+		#pragma clang diagnostic ignored "-Wextra-semi"
+	#endif
 #endif
 
 #include "vtkSurfaceBooleanOperations.h"
