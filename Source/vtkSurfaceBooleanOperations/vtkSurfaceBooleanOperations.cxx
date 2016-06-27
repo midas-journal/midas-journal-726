@@ -21,6 +21,9 @@
 	#if __has_warning("-Wextra-semi")
 		#pragma clang diagnostic ignored "-Wextra-semi"
 	#endif
+	#if __has_warning("-Winconsistent-missing-override")
+		#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+	#endif
 #endif
 
 #include "vtkSurfaceBooleanOperations.h"
